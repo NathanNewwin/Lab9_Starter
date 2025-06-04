@@ -87,22 +87,137 @@
     </section>
   </main>
 
+  <script src="https://cdn.trackjs.com/agent/v3/latest/t.js"></script>
   <script>
-    let form = document.querySelector('form');
-    form.addEventListener('submit', e => {
-      e.preventDefault();
-      let output = document.querySelector('output');
+  window.TrackJS && TrackJS.install({ 
+    token: "9f012bda803c47ebac4182e8d0c9013a"
+  });
+</script>
+  <script>
+  let form = document.querySelector('form');
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    let output = document.querySelector('output');
+
+    try {
       let firstNum = document.querySelector('#first-num').value;
       let secondNum = document.querySelector('#second-num').value;
       let operator = document.querySelector('#operator').value;
+
+      // Validate numbers
+      if (firstNum.trim() === '' || secondNum.trim() === '') {
+        throw new Error("Both numbers are required.");
+      }
+      if (isNaN(firstNum) || isNaN(secondNum)) {
+        throw new TypeError("Inputs must be numeric.");
+      }
+      if (secondNum == 0 && operator == "/"){
+        throw new TypeError("Cannot divide by 0");
+      }
+      if (!output) {
+        throw new ReferenceError("Output element is missing in DOM.");
+      }
+
       output.innerHTML = eval(`${firstNum} ${operator} ${secondNum}`);
-    });
+      console.log("Calculation successful.");
+    } catch (err) {
+      console.error("Caught an error during calculation:", err);
+      alert("Error: " + err.message);
+    } finally {
+      console.log("Calculation attempt complete.");
+    }
+  });
 
-    let errorBtns = Array.from(document.querySelectorAll('#error-btns > button'));
+  const errorBtns = Array.from(document.querySelectorAll('#error-btns > button'));
+  const sampleData = {
+    name: 'Mikayla',
+    age: 25,
+    skills: ['JavaScript', 'Python', 'HTML']
+  };
 
-    // Start your code here
-    // You may move this JS to another file if you wish
-  </script>
+  errorBtns[0].addEventListener('click', () => {
+    TrackJS.track(console.log("This is a console.log demo:", sampleData));
+  });
+
+  errorBtns[1].addEventListener('click', () => {
+    TrackJS.track(console.error("This is a console.error demo: Something went wrong!"));
+  });
+
+  errorBtns[2].addEventListener('click', () => {
+    TrackJS.track(console.count("Count Button Clicked"));
+  });
+
+  errorBtns[3].addEventListener('click', () => {
+    TrackJS.track(console.warn("This is a console.warn demo: Be careful!"));
+  });
+
+  errorBtns[4].addEventListener('click', () => {
+    const isValid = false;
+    TrackJS.track(console.assert(isValid, "Assertion failed: isValid should be true"));
+  });
+
+  errorBtns[5].addEventListener('click', () => {
+    TrackJS.track(console.clear());
+  });
+
+  errorBtns[6].addEventListener('click', () => {
+    TrackJS.track(console.dir(document.body));
+  });
+
+  errorBtns[7].addEventListener('click', () => {
+    TrackJS.track(console.dirxml(document.body));
+  });
+
+  errorBtns[8].addEventListener('click', () => {
+    TrackJS.track(console.group("Grouped Logs"));
+    console.log("Inside group log 1");
+    console.log("Inside group log 2");
+  });
+
+  errorBtns[9].addEventListener('click', () => {
+    TrackJS.track(console.groupEnd());
+  });
+
+  errorBtns[10].addEventListener('click', () => {
+    console.table([
+      { name: "Alice", age: 30 },
+      { name: "Bob", age: 25 },
+      { name: "Charlie", age: 35 }
+    ]);
+  });
+
+  errorBtns[11].addEventListener('click', () => {
+    TrackJS.track(console.time("Timer"));
+  });
+
+  errorBtns[12].addEventListener('click', () => {
+    TrackJS.track(console.timeEnd("Timer"));
+  });
+
+  errorBtns[13].addEventListener('click', () => {
+    function traceExample() {
+      TrackJS.track(console.trace("This is a console.trace demo"));
+    }
+    traceExample();
+  });
+
+window.onerror = function(message, source, lineno, colno, error) {
+  console.log("Caught a global error:");
+  console.log("Message:", message);
+  console.log("Source:", source);
+  console.log("Line:", lineno, "Column:", colno);
+  console.log("Error object:", error);
+  return true; // prevents default error logging in some browsers
+};
+
+// "Trigger a Global Error" button (last button)
+errorBtns[14].addEventListener('click', () => {
+  // This function does not exist and will throw an error
+  TrackJS.track(undefinedFunctionCall());
+});
+TrackJS.track('Testing TrackJS!');
+</script>
+
 </body>
 
 </html>
